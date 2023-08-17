@@ -90,7 +90,22 @@ class ParserClass(Base.BaseParser):
                 #check if as a value
                 if node.value == None:
                     Base.RaiseException(node, "The attribute must have a default value")
-                variable = VariableDeclared(node, node.target.id, node.annotation.id, node.value)
+                if isinstance(node.annotation, ast.Call):#exemple :   a:list(int) = [1,2,3]
+                    if not isinstance(node.annotation.func, ast.Name):
+                        Base.RaiseException(node, "The attribute must be typed")
+                    TYPE = str(node.annotation.func.id)+"<"
+                    if len(node.annotation.args) == 0:
+                        Base.RaiseException(node, "The attribute must be typed")
+                    for arg in node.annotation.args:
+                        if not isinstance(arg, ast.Name):
+                            Base.RaiseException(node, "The attribute must be typed")
+                        TYPE += str(arg.id)+","
+                    TYPE = TYPE[:-1]+">"
+                    variable = VariableDeclared(node, node.target.id, TYPE, node.value)                    
+                elif isinstance(node.annotation, ast.Name):
+                    variable = VariableDeclared(node, node.target.id, node.annotation.id, node.value)
+                else:
+                    Base.RaiseException(node, "The attribute must be typed")
                 variable.visibility = Header_settings["visibility"]
                 variable.UI_visibility = Header_settings["visibility"] == "public" if Header_settings["UI_visibility"] == None else Header_settings["UI_visibility"]
                 variable.static = Header_settings["static"]

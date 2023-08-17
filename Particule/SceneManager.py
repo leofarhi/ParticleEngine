@@ -5,6 +5,7 @@ from Particule.Modules.LanguageSystem import LanguageSystem
 from Particule.Modules.Directory import *
 from Particule.WindowEditor.WindowEditor import WindowEditor
 from Particule.Types.AssetItem import AssetItem
+from Particule.Types.Scene import Scene
 
 class SceneManager:
     def __init__(self,_Particule):
@@ -13,7 +14,25 @@ class SceneManager:
 
 
     def LoadScene(self,assetItem):
-        pass
+        if self.CurrentScene != None:
+            self.UnloadScene()
+        self.CurrentScene = Scene(assetItem=assetItem)
+        self.CurrentScene.Load()
+        self.Particule.GetEditor("Hierarchy").Update()
+        #print("Scene Loaded")
 
     def UnloadScene(self):
-        pass
+        if self.CurrentScene == None:
+            return
+        self.CurrentScene.Unload()
+        self.Particule.GetEditor("Hierarchy").Update()
+        #print("Scene Unloaded")
+
+    def CreateScene(self,path):
+        self.CurrentScene = Scene()
+        self.CurrentScene.Save(path)
+        asset = AssetItem.create(path)
+        self.CurrentScene.assetItem = asset
+        self.Particule.GetEditor("Project").Update()
+        self.Particule.GetEditor("Hierarchy").Update()
+        #print("Scene Created")

@@ -83,6 +83,7 @@ class AddComponentWindow(WindowEditor):
         super().__init__(None,"Ajouter un Component",ToplevelClass=tkinter.Toplevel)
         if self.WindowMode != "toplevel":
             raise Exception("AddComponentWindow: WindowMode not supported")
+        self.Particule.assetSystem.DisableNextRefresh = True
         self.MainFrame = ctk.CTkFrame(self.window,corner_radius=0,border_width=5)
         self.MainFrame.pack(fill=BOTH, expand=True)
         geo = str(self.ButtonAdd.winfo_width()) + "x250"

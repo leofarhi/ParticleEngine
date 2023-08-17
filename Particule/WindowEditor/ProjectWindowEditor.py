@@ -5,22 +5,25 @@ from Particule.Modules.Directory import *
 from Particule.Modules.Screen import GetScreenSize
 from Particule.Modules.SpecialImage import SpecialImage
 import os, sys
+from Particule.Types.AssetItem import AssetItem
 
 class FolderItem:
     Size = 70
     def __init__(self,path) -> None:
         self.opened = False
         self.path = path
-        #self.uuid = 
+
         self.name = os.path.basename(path)
-        self.extention = os.path.splitext(path)[1]
+        self.extension = os.path.splitext(path)[1]
         self.type = "file" if os.path.isfile(path) else "dir"
+
+        self.assetItem = AssetItem.GetAssetItem(path)
         self.children = []
         self.parent = None
         if self.type == "dir":
             self.image = ProjectWindowEditor.Images["folder"]
         else:
-            self.image = ProjectWindowEditor.Images[self.extention] if self.extention in ProjectWindowEditor.Images else ProjectWindowEditor.Images["file"]
+            self.image = ProjectWindowEditor.Images[self.extension] if self.extension in ProjectWindowEditor.Images else ProjectWindowEditor.Images["file"]
         if self.image == ProjectWindowEditor.Images[".png"]:
             self.image = SpecialImage(self.path)
         self.frameImage = None
@@ -43,13 +46,15 @@ class FolderItem:
         return count
     
     def ConfigureBindings(self):
-        self.frameLabel.bind("<Button-1>", self.OnClick)
-        self.frameLabel.bind("<Double-Button-1>", self.OnDoubleClick)
-        self.frameLabel.bind("<Button-3>", self.OnRightClick)
+        self.frameLabel.bind("<Button-1>", self.OnClicked)
+        self.frameLabel.bind("<Double-Button-1>", self.OnDoubleClicked)
+        self.frameLabel.bind("<Button-3>", self.OnRightClicked)
 
-    def OnClick(self,event):
+    def OnClicked(self,event):
         FolderItem.UnselectAll()
         self.frame.configure(fg_color="gray75")
+        if self.type == "file":
+            AssetItem.CallFunction(self.assetItem,"OnClickedProject")
 
     def UnselectAll():
         projectWindowEditor = GlobalVars.Particule.screenOrganization.windowEditors.get("Project")
@@ -59,21 +64,23 @@ class FolderItem:
             if i.frame:
                 i.frame.configure(fg_color="transparent")
 
-    def OnDoubleClick(self,event):
+    def OnDoubleClicked(self,event):
         projectWindowEditor = GlobalVars.Particule.screenOrganization.windowEditors.get("Project")
         if projectWindowEditor is None:
             return
         if self.type == "dir":
             projectWindowEditor.currentFolder = self.path
             projectWindowEditor.UpdateFolderView()
+        elif self.type == "file":
+            AssetItem.CallFunction(self.assetItem,"OnDoubleClickedProject")
 
-    def OnRightClick(self,event):
+    def OnRightClicked(self,event):
         pass
 
 
     def Draw(listOfItems,frame,projectWindowEditor):
         width = projectWindowEditor.panedWindow.MainFrames[projectWindowEditor.FolderView].winfo_width()
-        columns = (width // (FolderItem.Size+15))-1
+        columns = (width // (FolderItem.Size+(15*2)))-1
         if columns <= 0:
             columns = 1
         count = 0
@@ -81,11 +88,17 @@ class FolderItem:
         for i in range(len(rm)):
             rm[i] = os.path.normpath(rm[i])
         if not os.path.normpath(projectWindowEditor.currentFolder) in rm:
-            parent = FolderItem(os.path.dirname(projectWindowEditor.currentFolder))
-            parent.name = ".."
-            parent.image = ProjectWindowEditor.Images["folder_back"]
-            parent.DrawItem(frame,count,columns)
-            count += 1
+            can = True
+            if len(listOfItems) > 0:
+                if listOfItems[0].name == "..":
+                    can = False
+            if can:
+                parent = FolderItem(os.path.dirname(projectWindowEditor.currentFolder))
+                parent.name = ".."
+                parent.image = ProjectWindowEditor.Images["folder_back"]
+                #parent.DrawItem(frame,count,columns)
+                listOfItems.insert(0,parent)
+                count += 1
         for i in listOfItems:
             count = i.DrawItem(frame,count,columns)
 
@@ -147,6 +160,15 @@ class ProjectWindowEditor(WindowEditor):
             self.UpdateFolderView()
 
     def UpdateTree(self):
+        #save open folders
+        openedFolders = []
+        #recursively get open folders
+        def GetOpenFolders(item):
+            if self.projectTree.item(item,"open") == True:
+                openedFolders.append(item)
+            for i in self.projectTree.get_children(item):
+                GetOpenFolders(i)
+        GetOpenFolders("")
         #clear All tree items
         for i in self.projectTree.get_children():
             self.projectTree.delete(i)
@@ -172,7 +194,13 @@ class ProjectWindowEditor(WindowEditor):
         #files
         for i in files:
             self.projectTree.insert(os.path.dirname(i[0]), "end", i[0], text=os.path.basename(i[0]), values=i, tags=("file"), image=self.file_image)
-
+        #open folders
+        for i in openedFolders:
+            #get item from path and open it
+            #check if item exists
+            if not self.projectTree.exists(i):
+                continue
+            self.projectTree.item(i,open=True)
     def UpdateFolderView(self):
         for i in self.Items:
             if i.frame:
@@ -194,6 +222,10 @@ class ProjectWindowEditor(WindowEditor):
                 i.frame.destroy()
         FolderItem.Draw(self.Items,self.FolderViewScroll,self)
 
+    def Update(self):
+        self.UpdateFolderView()
+        self.UpdateTree()
+
     def LoadImages(self):
         ProjectWindowEditor.Images["folder"] = SpecialImage("lib/UI/Icons/Project/folder_big.png")
         ProjectWindowEditor.Images["file"] = SpecialImage("lib/UI/Icons/Project/textfile_big.png")
@@ -203,7 +235,7 @@ class ProjectWindowEditor(WindowEditor):
             imgPath = path + i
             name = os.path.splitext(i)[0]
             img = SpecialImage(imgPath)
-            extention = name.split(".")
-            del extention[0]
-            for j in extention:
+            extension = name.split(".")
+            del extension[0]
+            for j in extension:
                 ProjectWindowEditor.Images["."+j] = img

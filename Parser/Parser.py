@@ -24,8 +24,6 @@ for parser in All_Parser:
     parser.Redirection = Redirection
 
 def Parse(nodeAST):
-    #dump
-    print(ast.dump(nodeAST))
     if not isinstance(nodeAST, ast.AST):
         Base.RaiseException(nodeAST, "The nodeAST must be an AST")
     if not isinstance(nodeAST, ast.Module):

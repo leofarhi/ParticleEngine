@@ -7,4 +7,10 @@ class VariableDeclared:
         self.static = False
         self.visibility = "private"
         self.UI_visibility = False
+
+    def __str__(self):
+        return self.type+" "+self.name
+
+    def __repr__(self):
+        return self.__str__()
         

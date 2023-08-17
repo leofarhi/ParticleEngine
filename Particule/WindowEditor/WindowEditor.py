@@ -67,10 +67,10 @@ class WindowEditor(CTkAppearanceModeBaseClass):
 
     def _set_appearance_mode(self, *args, **kwargs):
         super()._set_appearance_mode(*args, **kwargs)
-        self.ChangeAppearanceMode(self._get_appearance_mode())
+        self.OnChangeAppearanceMode(self._get_appearance_mode())
 
     def UpdateAppearanceMode(self):
-        self.ChangeAppearanceMode(self._get_appearance_mode()=="dark")
+        self.OnChangeAppearanceMode(self._get_appearance_mode()=="dark")
 
-    def ChangeAppearanceMode(self,mode):
+    def OnChangeAppearanceMode(self,mode):
         pass

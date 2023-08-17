@@ -1,3 +1,4 @@
+from Particule.Modules.CallBacksSystem import *
 import platform
 import subprocess
 import webbrowser
@@ -15,8 +16,13 @@ from tkinter.filedialog import *
 from tkinter import ttk
 import customtkinter as ctk
 from customtkinter.windows.widgets.appearance_mode.appearance_mode_base_class import CTkAppearanceModeBaseClass
+from customtkinter.windows.widgets.scaling.scaling_base_class import CTkScalingBaseClass
+from customtkinter.windows.widgets.scaling.scaling_tracker import ScalingTracker
+
 from OpenGL import GL
+
 from pyopengltk import OpenGLFrame
+import datetime
 from PIL import Image
 from PIL import ImageTk
 import numpy as np

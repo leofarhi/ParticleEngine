@@ -200,9 +200,9 @@ class HubWindowEditor(WindowEditor):
                     projects.remove(projects[count])
                     continue
                 else:
-                        #recharger le config.proj
-                        with open(os.path.join(projects[count]["projectPath"], "config.proj"), "r", encoding="utf-8") as f:
-                            projects[count] = json.load(f)
+                    #recharger le config.proj
+                    with open(os.path.join(projects[count]["projectPath"], "config.proj"), "r", encoding="utf-8") as f:
+                        projects[count] = json.load(f)
             except:
                 projects.remove(projects[count])
                 continue
@@ -262,6 +262,7 @@ class HubWindowEditor(WindowEditor):
         os.mkdir(os.path.join(path, "Assets"))
         os.mkdir(os.path.join(path, "Assets", "Scripts"))
         os.mkdir(os.path.join(path, "Assets", "Textures"))
+        os.mkdir(os.path.join(path, "Assets", "Scenes"))
         os.mkdir(os.path.join(path, "Library"))
         os.mkdir(os.path.join(path, "Library", "tmp"))
         os.mkdir(os.path.join(path, "Build"))
@@ -270,7 +271,9 @@ class HubWindowEditor(WindowEditor):
             "projectPath": path,
             "template": template,
             "language":"fr",
-            "version":GlobalVars.Particule.version
+            "version":GlobalVars.Particule.version,
+            "lastOpened": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "scene": "",
         }
         with open(os.path.join(path , "config.proj"), "w", encoding="utf-8") as f:
             json.dump(projetConfig, f, indent=4)
@@ -302,7 +305,10 @@ class HubWindowEditor(WindowEditor):
                     #le faire remonter dans la liste (le mettre en premier)
                     self.config["projects"].remove(i)
                     self.config["projects"].insert(0, i)
-                    return
+                    
+            #actualiser le path du projet dans le config
+            config["projectPath"] = path
+            self.Particule.SaveConfig(config)
             self.config["projects"].append(config)
             self.SaveHubConfig()
             self.ShowListProjects()

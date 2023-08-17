@@ -7,6 +7,10 @@ from Particule.WindowEditor.HierarchyWindowEditor import HierarchyWindowEditor
 from Particule.WindowEditor.InspectorWindowEditor import InspectorWindowEditor
 from Particule.WindowEditor.ProjectWindowEditor import ProjectWindowEditor
 from Particule.WindowEditor.ConsoleWindowEditor import ConsoleWindowEditor
+from Particule.WindowEditor.BuildSettingsWindowEditor import BuildSettingsWindowEditor
+from Particule.WindowEditor.PreferencesWindowEditor import PreferencesWindowEditor
+from Particule.WindowEditor.ProjectSettingsWindowEditor import ProjectSettingsWindowEditor
+from Particule.Modules.MyCustomTkinter.MyMenu import MyMenu
 
 class SplitFrame(MyPanedWindow):
     def __init__(self, master, orient, **kwargs):
@@ -34,6 +38,9 @@ class ScreenOrganization:
         #make Body
         Body = ctk.CTkFrame(fn)
         Body.pack(side=TOP, fill=BOTH, expand=True)
+
+        self.MainMenu = MyMenu(self.Particule.window)
+        self.Particule.window.config(menu=self.MainMenu)
         
         SplitCenter = SplitFrame(Body, orient=VERTICAL)
         SplitCenter.pack(side=TOP, fill=BOTH, expand=True)
@@ -88,4 +95,5 @@ class ScreenOrganization:
         #à terminer
     def LoadInterfaceOrganization(self):
         pass
+
 

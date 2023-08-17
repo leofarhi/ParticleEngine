@@ -29,6 +29,12 @@ def GetType(name,node):
     CLASS = ParserClass.GetClassByName(name)
     if CLASS != None:
         return CLASS.name+"*"
+    if "<" in name and ">" in name:
+        firstName = name.split("<",1)[0]
+        if firstName == "list":
+            return "List*"
+        if firstName == "dict":
+            return "Dict*"
     RaiseException(node, "Unknown type "+name)
 
 def GetValue(value):
@@ -43,6 +49,16 @@ def GetValue(value):
             return "1"
         if value.value == False:
             return "0"
+    if isinstance(value, ast.List):
+        lst = []
+        for el in value.elts:
+            lst.append(GetValue(el))
+        return "{"+",".join(lst)+"}"
+    if isinstance(value, ast.Dict):
+        lst = []
+        for key in value.keys:
+            lst.append(GetValue(key)+":"+GetValue(value.values[value.keys.index(key)]))
+        return "{"+",".join(lst)+"}"
     RaiseException(value, "Unknown value "+str(value))
     
 def RaiseException(node, msg):
