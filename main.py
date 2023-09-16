@@ -1,13 +1,3 @@
-"""
-import Parser.Parser as Parser
-
-content = Parser.Parse(Parser.ParseFile("ProjetTests/test.py"))
-if True:
-    print(content.GetCFile())
-    print('$'*20)
-    print(content.GetHFile())
-exit()
-"""
 __author__ = 'Farhi'
 import os
 import time
