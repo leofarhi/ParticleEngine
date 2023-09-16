@@ -1,58 +1,43 @@
-import ast
+import javalang
 import os, sys
 
-import Parser.Base as Base
-from Parser.Contents.ContentC import ContentC
-import Parser.ParserClass as ParserClass
-import Parser.ParserFunction as ParserFunction
-import Parser.ParserBody as ParserBody
+from Base import BaseNode
+from Content import Content
+import importlib
 
+### Redirection
+def LoadLanguage(name):
+    Nodes = dict()
+    for i in os.listdir(os.path.dirname(__file__) + "/Nodes"):
+        if i.endswith(".py"):
+            if i != "__init__.py":
+                mod = importlib.import_module("Nodes." + i[:-3])
+                modClass = getattr(mod, i[:-3])
+                Nodes[i[:-3]] = modClass
+    for i in Nodes:
+        Nodes[i].RegisterNodes = Nodes
+    BaseNode.RegisterNodes = Nodes
+    path = os.path.dirname(__file__) + "/Language"
+    if name in os.listdir(path):
+        for i in os.listdir(path+"/"+name+"/Nodes"):
+            if i.endswith(".py"):
+                if i != "__init__.py":
+                    mod = importlib.import_module("Language." + name + ".Nodes." + i[:-3])
+                    modClass = getattr(mod, i[:-3])
+                    Nodes[i[:-3]] = modClass
+        for i in Nodes:
+            Nodes[i].RegisterNodes = Nodes
+        BaseNode.RegisterNodes = Nodes
+### End Redirection
 
-Redirection = {
-    ast.ClassDef: ParserClass.ParserClass,
-    ast.FunctionDef: ParserFunction.ParserFunction,
-}
+LoadLanguage(None)
 
-#convert to list
-All_Parser =  []
-for key in Redirection:
-    All_Parser.append(Redirection[key])
-
-Base.BaseParser.Redirection = Redirection
-
-for parser in All_Parser:
-    parser.Redirection = Redirection
-
-def Parse(nodeAST):
-    if not isinstance(nodeAST, ast.AST):
-        Base.RaiseException(nodeAST, "The nodeAST must be an AST")
-    if not isinstance(nodeAST, ast.Module):
-        Base.RaiseException(nodeAST, "The nodeAST must be a Module")
-    Content = ContentC()
-    Content.filename = nodeAST.filename
-    #parse code
-    for parser in All_Parser:
-        parser.Register = []
-    for node in nodeAST.body:
-        CC = Redirection.get(type(node))
-        if CC is None:
-            Base.RaiseException(node, "This line is not allowed")
-        else:
-            parser = CC(node)
-            parser.Compile()
-            if Base.DEBUG:
-                parser.PrintVariables()
-                print('#'*20)
-            Content += parser.GetContent()
-    return Content
-
-def ParseFile(path):
-    with open(path, "r") as f:
-        content = f.read()
-    try:
-        nodeAST = ast.parse(content)
-    except Exception as e:
-        raise Exception("Error in the parsing of the file " + path + " |#| " + str(e))
-    #add filename with name without extension
-    nodeAST.filename = os.path.splitext(os.path.basename(path))[0]
-    return nodeAST
+def Parse(filename):
+    with open(filename, "r") as f:
+        text = f.read()
+    tree = javalang.parse.parse(text)
+    file = BaseNode.NewNode("NodeFile")("file.java",tree)
+    file.Compile()
+    return file.GetContent()
+if __name__ == "__main__":
+    content = Parse(os.path.dirname(__file__) +"/JavaTextTest.java")

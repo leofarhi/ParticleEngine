@@ -13,8 +13,8 @@ import os
 import time
 import shutil
 import platform
-import Particule.Particule as Particule
-import Particule.Modules.Directory as Directory
+import Particle.Particle as Particle
+import Particle.Modules.Directory as Directory
 
 try:
     shutil.rmtree(os.getcwd() + "/lib/tmp")
@@ -24,7 +24,7 @@ except:
 time.sleep(1)
 Directory.CreateDir(os.getcwd() + "/lib/tmp")
 
-particule =  Particule.Particule()
-particule.HubWindow()
-if particule.config != None:
-    particule.Start()
+Particle =  Particle.Particle()
+Particle.HubWindow()
+if Particle.config != None:
+    Particle.Start()
