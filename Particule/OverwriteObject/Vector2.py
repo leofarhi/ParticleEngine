@@ -54,8 +54,8 @@ class Vector2Drawer(PropertyDrawer):
         super().__init__(masterFrame,serializedProperty)
         self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
-        self.x = DoubleVar()
-        self.y = DoubleVar()
+        self.x = WithDefaultValueVar(DoubleVar,0)
+        self.y = WithDefaultValueVar(DoubleVar,0)
         vector2 = self.serializedProperty.GetValue()
         self.x.set(vector2.x)
         self.y.set(vector2.y)
@@ -78,18 +78,11 @@ class Vector2Drawer(PropertyDrawer):
 
     def OnValueChanged(self,*args):
         val = self.serializedProperty.GetValue()
-        try:
-            self.x.get()
-            self.y.get()
-        except:
-            return
         val.x = self.x.get()
         val.y = self.y.get()
         self.serializedProperty.SetValue(val)
 
     def OnFocusOut(self,*args):
-        try:self.x.get()
-        except:self.x.set(0)
-        try:self.y.get()
-        except:self.y.set(0)
+        self.x.fix()
+        self.y.fix()
         self.OnValueChanged()

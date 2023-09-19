@@ -78,6 +78,23 @@ def CustomComponentDrawer(type):
         return Class
     return decorator
 
+def WithDefaultValueVar(TkinterVar, value):
+    class DefaultVar(TkinterVar):
+        def get(self):
+            try:
+                return super().get()
+            except TclError:
+                return self.default
+            
+        def fix(self):
+            try:
+                super().get()
+            except TclError:
+                super().set(self.default)
+
+    default_var = DefaultVar()
+    default_var.default = value
+    return default_var
 
 @CustomPropertyDrawer("int")
 @CustomPropertyDrawer("byte")
@@ -93,7 +110,7 @@ class IntDrawer(PropertyDrawer):
         #label grid
         self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
-        self.var = IntVar()
+        self.var = WithDefaultValueVar(IntVar,0)
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
@@ -102,16 +119,12 @@ class IntDrawer(PropertyDrawer):
         self.entry.bind("<FocusOut>",self.OnFocusOut)
 
     def OnValueChanged(self,*args):
-        try:int(float(self.var.get()))
-        except:return
-        if type(self.var.get())!=int:
-            self.var.set(int(float(self.var.get())))
         self.serializedProperty.SetValue(self.var.get())
     
     def OnFocusOut(self,*args):
-        try:self.var.get()
-        except:self.var.set(0)
+        self.var.fix()
         self.OnValueChanged()
+
 @CustomPropertyDrawer("float")
 @CustomPropertyDrawer("double")
 class FloatDrawer(PropertyDrawer):
@@ -124,7 +137,7 @@ class FloatDrawer(PropertyDrawer):
         #label grid
         self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
-        self.var = DoubleVar()
+        self.var = WithDefaultValueVar(DoubleVar,0)
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
@@ -133,13 +146,10 @@ class FloatDrawer(PropertyDrawer):
         self.entry.bind("<FocusOut>",self.OnFocusOut)
 
     def OnValueChanged(self,*args):
-        try:float(self.var.get())
-        except:return
         self.serializedProperty.SetValue(float(self.var.get()))
 
     def OnFocusOut(self,*args):
-        try:self.var.get()
-        except:self.var.set(0)
+        self.var.fix()
         self.OnValueChanged()
 
 @CustomPropertyDrawer("boolean")

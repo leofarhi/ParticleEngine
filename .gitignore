@@ -160,4 +160,5 @@ cython_debug/
 ProjetTests/*
 ParticuleEngine.bat
 lib/hub.json
+lib/tmp/*
 OldParser/*
