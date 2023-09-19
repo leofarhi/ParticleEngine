@@ -64,11 +64,14 @@ class Vector2Drawer(PropertyDrawer):
         #label grid
         self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
+
+        self.frame.grid_columnconfigure(1, weight=1)
+        self.frame.grid_columnconfigure(2, weight=1)
         
         self.entry1 = ctk.CTkEntry(self.frame,textvariable=self.x)
-        self.entry1.grid(row=0,column=1)
+        self.entry1.grid(row=0,column=1,sticky="ew")
         self.entry2 = ctk.CTkEntry(self.frame,textvariable=self.y)
-        self.entry2.grid(row=0,column=2)
+        self.entry2.grid(row=0,column=2,sticky="ew")
         self.OnValueChanged()
         self.entry1.bind("<FocusOut>",self.OnFocusOut)
         self.entry2.bind("<FocusOut>",self.OnFocusOut)

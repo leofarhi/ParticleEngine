@@ -89,8 +89,7 @@ class IntDrawer(PropertyDrawer):
         self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #config grid
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.columnconfigure(1, weight=1)
+        self.frame.grid_columnconfigure(1, weight=1)
         #label grid
         self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
@@ -98,7 +97,7 @@ class IntDrawer(PropertyDrawer):
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
-        self.entry.grid(row=0,column=1)
+        self.entry.grid(row=0,column=1,sticky="ew")
         self.OnValueChanged()
         self.entry.bind("<FocusOut>",self.OnFocusOut)
 
@@ -121,8 +120,7 @@ class FloatDrawer(PropertyDrawer):
         self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #config grid
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.columnconfigure(1, weight=1)
+        self.frame.grid_columnconfigure(1, weight=1)
         #label grid
         self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
@@ -130,7 +128,7 @@ class FloatDrawer(PropertyDrawer):
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
-        self.entry.grid(row=0,column=1)
+        self.entry.grid(row=0,column=1,sticky="ew")
         self.OnValueChanged()
         self.entry.bind("<FocusOut>",self.OnFocusOut)
 
@@ -157,7 +155,7 @@ class BoolDrawer(PropertyDrawer):
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkCheckBox(self.frame,variable=self.var,text="")
-        self.entry.grid(row=0,column=1)
+        self.entry.grid(row=0,column=1,sticky="ew")
         self.OnValueChanged()
 
     def OnValueChanged(self,*args):
@@ -169,17 +167,42 @@ class StringDrawer(PropertyDrawer):
         super().__init__(masterFrame,serializedProperty)
         self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
-        #config grid left and expand column 1
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.columnconfigure(1, weight=1)
+        self.frame.grid_columnconfigure(1, weight=1)
         #label grid
-        self.label = Label(self.frame,text=self.serializedProperty.attributeName)
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
         self.label.grid(row=0,column=0,padx=2)
         self.var = StringVar()
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
         self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
-        self.entry.grid(row=0,column=1)
+        self.entry.grid(row=0,column=1,sticky="ew")
+        #self.OnValueChanged()
+
+    def OnValueChanged(self,*args):
+        self.serializedProperty.SetValue(self.var.get())
+
+@CustomPropertyDrawer("char")
+class CharDrawer(PropertyDrawer):
+    def __init__(self,masterFrame,serializedProperty):
+        super().__init__(masterFrame,serializedProperty)
+        self.frame = ctk.CTkFrame(self.masterFrame)
+        self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
+        self.frame.grid_columnconfigure(1, weight=1)
+        #label grid
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
+        self.label.grid(row=0,column=0,padx=2)
+        self.var = StringVar()
+        self.var.set(self.serializedProperty.GetValue())
+        self.var.trace_add("write",self.OnValueChanged)
+        
+        #validate char
+        def validate(text):
+            if len(text) <= 1:
+                return True
+            return False
+
+        self.entry = ctk.CTkEntry(self.frame,textvariable=self.var,validate="key",validatecommand=(self.frame.register(validate), '%P'))
+        self.entry.grid(row=0,column=1,sticky="ew")
         #self.OnValueChanged()
 
     def OnValueChanged(self,*args):

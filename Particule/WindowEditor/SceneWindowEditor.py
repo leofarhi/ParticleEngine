@@ -17,19 +17,13 @@ surfaces = ((0, 1, 2, 3), (3, 2, 7, 6), (6, 7, 5, 4), (4, 5, 1, 0), (1, 5, 7, 2)
 colors = ((1, 0, 0), (0, 1, 0), (1, 0.5, 0), (1, 1, 0), (1, 1, 1), (0, 0, 1))
 
 rot_cube_map = {'Up': (-1, 0), 'Down': (1, 0), 'Left': (0, -1), 'Right': (0, 1)}
-rot_slice_map = {
-    '1': (0, 0, 1), '2': (0, 1, 1), '3': (0, 2, 1), '4': (1, 0, 1), '5': (1, 1, 1),
-    '6': (1, 2, 1), '7': (2, 0, 1), '8': (2, 1, 1), '9': (2, 2, 1),
-    'F1': (0, 0, -1), 'F2': (0, 1, -1), 'F3': (0, 2, -1), 'F4': (1, 0, -1), 'F5': (1, 1, -1),
-    'F6': (1, 2, -1), 'F7': (2, 0, -1), 'F8': (2, 1, -1), 'F9': (2, 2, -1),
-}
 
 class Cube():
     def __init__(self, id, N, scale):
         self.N = 3
         self.scale = scale
         self.init_i = [*id]
-        self.current_i = [*id]  # 表示填充，一个变量值代替多个
+        self.current_i = [*id]
         self.rot = [[1 if i == j else 0 for i in range(3)] for j in range(3)]
 
     def isAffected(self, axis, slice, dir):
@@ -57,7 +51,7 @@ class Cube():
 
         glPushMatrix()
         if animate and self.isAffected(axis, slice, dir):
-            glRotatef(angle * dir, *[1 if i == axis else 0 for i in range(3)])  # 围着这个坐标点旋转
+            glRotatef(angle * dir, *[1 if i == axis else 0 for i in range(3)])
         glMultMatrixf(self.transformMat())
 
         glBegin(GL_QUADS)
@@ -74,7 +68,7 @@ class mycube():
     def __init__(self, N, scale):
         self.N = N
         cr = range(self.N)
-        self.cubes = [Cube((x, y, z), self.N, scale) for x in cr for y in cr for z in cr]  # 创建27
+        self.cubes = [Cube((x, y, z), self.N, scale) for x in cr for y in cr for z in cr]
 
     def maindd(self):
         for cube in self.cubes:
@@ -87,16 +81,15 @@ class GLFrame(OpenGLFrame):
         self.count = 0
 
         self.ang_x, self.ang_y, self.rot_cube = 0, 0, (0, 0)
-        self.animate1Cube, self.animate_ang, self.animate_speed = False, 0, 2
         self.action = (0, 0, 0)
-        glClearColor(0.0, 0.0, 0.0, 0.0)  # 背景黑色
-        # glViewport(400, 400, 200, 200)  # 指定了视口的左下角位置
+        glClearColor(0.0, 0.0, 0.0, 0.0)
+        # glViewport(400, 400, 200, 200)
 
-        glEnable(GL_DEPTH_TEST)  # 开启深度测试，实现遮挡关系
-        glDepthFunc(GL_LEQUAL)  # 设置深度测试函数（GL_LEQUAL只是选项之一）
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LEQUAL)
 
         glMatrixMode(GL_PROJECTION)  
-        glLoadIdentity()  # 恢复原始坐标
+        glLoadIdentity()
         gluPerspective(30, self.width / self.height, 0.1, 50.0)
 
         self.N = 3
@@ -104,8 +97,6 @@ class GLFrame(OpenGLFrame):
         self.cubes = [Cube((x, y, z), self.N, 1.5) for x in cr for y in cr for z in cr]
 
     def keydown(self, event):
-        if event.keysym in rot_slice_map:
-            self.animate1Cube, self.action = True, rot_slice_map[event.keysym]
         if event.keysym in rot_cube_map:
             self.rot_cube = rot_cube_map[event.keysym]
 
@@ -125,16 +116,8 @@ class GLFrame(OpenGLFrame):
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        if self.animate1Cube:
-            if self.animate_ang >= 90:
-                for cube in self.cubes:
-                    cube.update(*self.action)
-                self.animate1Cube, self.animate_ang = False, 0
-
         for cube in self.cubes:
-            cube.draw(colors, surfaces, vertices, self.animate, self.animate_ang, *self.action)
-        if self.animate1Cube:
-            self.animate_ang += self.animate_speed
+            cube.draw(colors, surfaces, vertices, self.animate, 0, *self.action)
 
 class SceneWindowEditor(WindowEditor):
     def __init__(self, master=None):
@@ -142,10 +125,27 @@ class SceneWindowEditor(WindowEditor):
         screen_size = GetScreenSize()
         self.SetSize(screen_size[0]//2, screen_size[1]//2)
         self.glframe = GLFrame(self.window, width=800, height=600)
-        #self.bind("<Key>", self.glframe.key)
-        self.Particule.window.bind("<KeyPress>", self.glframe.keydown)
-        self.Particule.window.bind("<KeyRelease>", self.glframe.keyup)
+        self.OnFocus = False
+        self.Particule.window.bind("<KeyPress>", lambda event: self.Remote(event,"<KeyPress>"))
+        self.Particule.window.bind("<KeyRelease>", lambda event: self.Remote(event,"<KeyRelease>"))
+        self.Particule.window.bind("<Button-1>", lambda event: self.Remote(event,"<Button-1>"))
         self.glframe.pack(expand=True, fill=BOTH)
+
+    def Remote(self,event,bindName):
+        if bindName == "<Button-1>":
+            self.OnFocus = event.widget == self.glframe
+            if self.OnFocus:
+                self.glframe.focus_set()
+                self.glframe.focus_force()
+            return
+        if bindName == "<KeyRelease>":
+            self.glframe.keyup(event)
+            return
+        if not self.OnFocus:
+            return
+        if bindName == "<KeyPress>":
+            self.glframe.keydown(event)
+            return
     
     @AddCallBackToStack("OnCreateMenu", 0)
     def OnCreateMenu():
