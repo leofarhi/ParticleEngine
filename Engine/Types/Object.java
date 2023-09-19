@@ -6,7 +6,7 @@ public class Object{
     public String UUID;
 
     public Object() {
-        this.UUID = ParticleEngine.GenerateUUID();
+        this.UUID = ParticuleEngine.GenerateUUID();
     }
 
     public Object(String UUID) {

@@ -3,7 +3,7 @@ import os,sys
 import subprocess
 import platform
 
-url = "https://github.com/leofarhi/ParticleEngine.git"
+url = "https://github.com/leofarhi/ParticuleEngine.git"
 
 #check if the user have git installed with the command git
 try:
@@ -24,11 +24,11 @@ except:
     sys.exit()
 
 #set this folder as the current working directory
-os.chdir(os.path.dirname(os.path.abspath(__file__))+ "/ParticleEngine")
+os.chdir(os.path.dirname(os.path.abspath(__file__))+ "/ParticuleEngine")
 
 #check if the folder venv exist
 if os.path.isdir("venv"):
-    print("You already installed Particle")
+    print("You already installed Particule")
 
 #check if the user have python 3.10
 if sys.version_info[0] != 3 or sys.version_info[1] != 10:
@@ -74,12 +74,12 @@ for package in requirement.split("\n"):
 
 #make Start File executable .bat for Windows and .sh for Linux
 if platform.system() == "Windows":
-    with open("ParticleEngine.bat", "w") as file:
+    with open("ParticuleEngine.bat", "w") as file:
         file.write("venv\\Scripts\\python.exe main.py")
         #wait for the user to press enter
         file.write("\npause")
 else:
-    with open("ParticleEngine.sh", "w") as file:
+    with open("ParticuleEngine.sh", "w") as file:
         file.write("venv/bin/python3.10 main.py")
         file.write("\nread -p \"Press enter to continue...\"")
 

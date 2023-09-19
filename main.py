@@ -3,8 +3,8 @@ import os, sys
 import time
 import shutil
 import platform
-import Particle.Particle as Particle
-import Particle.Modules.Directory as Directory
+import Particule.Particule as Particule
+import Particule.Modules.Directory as Directory
 
 
 #set working directory to the directory of the script
@@ -18,7 +18,7 @@ except:
 time.sleep(1)
 Directory.CreateDir(os.getcwd() + "/lib/tmp")
 
-Particle =  Particle.Particle()
-Particle.HubWindow()
-if Particle.config != None:
-    Particle.Start()
+Particule =  Particule.Particule()
+Particule.HubWindow()
+if Particule.config != None:
+    Particule.Start()
