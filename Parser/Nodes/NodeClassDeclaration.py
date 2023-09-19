@@ -24,7 +24,8 @@ class NodeClassDeclaration(BaseNode):
                 self.implements.append(i.name)
         if self.tree.annotations is not None:
             for i in self.tree.annotations:
-                self.annotations.append(i.name)
+                self.annotations.append(BaseNode.NewNode("NodeAnnotation")(i))
+                self.annotations[-1].Compile()
         if self.tree.modifiers is not None:
             for i in self.tree.modifiers:
                 if i == "public" or i == "private" or i == "protected":

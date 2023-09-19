@@ -4,8 +4,8 @@ from Particle.Modules.Includes import ctk
 from Particle.Modules.LanguageSystem import LanguageSystem
 from Particle.Modules.Directory import *
 from Particle.WindowEditor.WindowEditor import WindowEditor
-from Particle.Types.AssetItem import AssetItem
-from Particle.Types.Scene import Scene
+from Particle.OverwriteObject.AssetItem import AssetItem
+from Particle.OverwriteObject.Scene import Scene
 
 class SceneManager:
     def __init__(self,_Particle):
@@ -18,14 +18,18 @@ class SceneManager:
             self.UnloadScene()
         self.CurrentScene = Scene(assetItem=assetItem)
         self.CurrentScene.Load()
-        self.Particle.GetEditor("Hierarchy").Update()
+        Hierarchy = self.Particle.GetEditor("Hierarchy")
+        if Hierarchy != None:
+            Hierarchy.UpdateHierarchy()
         #print("Scene Loaded")
 
     def UnloadScene(self):
         if self.CurrentScene == None:
             return
         self.CurrentScene.Unload()
-        self.Particle.GetEditor("Hierarchy").Update()
+        Hierarchy = self.Particle.GetEditor("Hierarchy")
+        if Hierarchy != None:
+            Hierarchy.UpdateHierarchy()
         #print("Scene Unloaded")
 
     def CreateScene(self,path):

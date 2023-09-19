@@ -1,10 +1,14 @@
 __author__ = 'Farhi'
-import os
+import os, sys
 import time
 import shutil
 import platform
 import Particle.Particle as Particle
 import Particle.Modules.Directory as Directory
+
+
+#set working directory to the directory of the script
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 try:
     shutil.rmtree(os.getcwd() + "/lib/tmp")

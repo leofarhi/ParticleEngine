@@ -1,5 +1,8 @@
-import javalang
 import os, sys
+currentWorkingDirectory = os.getcwd()
+os.chdir(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))
+import javalang
 
 from Base import BaseNode
 from Content import Content
@@ -38,6 +41,10 @@ def Parse(filename):
     tree = javalang.parse.parse(text)
     file = BaseNode.NewNode("NodeFile")("file.java",tree)
     file.Compile()
-    return file.GetContent()
+    return file
+
 if __name__ == "__main__":
-    content = Parse(os.path.dirname(__file__) +"/JavaTextTest.java")
+    content = Parse(os.path.dirname(__file__) +"/JavaTextTest.java").GetContent()
+
+os.chdir(currentWorkingDirectory)
+sys.path.remove(os.path.dirname(__file__))

@@ -4,6 +4,8 @@ from Particle.Modules.LanguageSystem import LanguageSystem
 from Particle.Modules.Directory import *
 from Particle.Modules.Screen import GetScreenSize
 from Particle.WindowEditor.InspectorWindowEditor import InspectorWindowEditor
+from Particle.Modules.MyCustomTkinter.MyToggledFrame import MyToggledFrame
+from Particle.WindowEditor.CustomComponentEditor import *
 
 class InspectorGameObject:
     name = "GameObject"
@@ -11,6 +13,7 @@ class InspectorGameObject:
         #print("init inspector: " + self.name)
         self.name = InspectorGameObject.name
         self.inspectorWindowEditor = inspectorWindowEditor
+        self.Particle = inspectorWindowEditor.Particle
 
         self.frame = ctk.CTkFrame(self.inspectorWindowEditor.window)
 
@@ -67,6 +70,75 @@ class InspectorGameObject:
         self.Dropdown = ctk.CTkComboBox(self.header_frame, variable=self.varLayer)
         self.Dropdown.grid(row=1, column=3, sticky="we", columnspan=2)
 
+        #bind header
+        self.varName.trace("w", self.OnNameChanged)
+        self.varActive.trace("w", self.OnActiveChanged)
+        self.varStatic.trace("w", self.OnStaticChanged)
+        self.varTag.trace("w", self.OnTagChanged)
+        self.varLayer.trace("w", self.OnLayerChanged)
+
+
+        self.CurrentGameObjectEdited = None
+    
+    def OnNameChanged(self,*args):
+        if self.CurrentGameObjectEdited == None:
+            return
+        self.CurrentGameObjectEdited.name = self.varName.get()
+        hierarchy = self.Particle.GetEditor("Hierarchy")
+        if hierarchy!= None:
+            hierarchy.UpdateHierarchy(self.CurrentGameObjectEdited)
+
+    def OnActiveChanged(self,*args):
+        if self.CurrentGameObjectEdited == None:
+            return
+        self.CurrentGameObjectEdited.activeSelf = self.varActive.get()
+
+    def OnStaticChanged(self,*args):
+        if self.CurrentGameObjectEdited == None:
+            return
+        self.CurrentGameObjectEdited.isStatic = self.varStatic.get()
+
+    def OnTagChanged(self,*args):
+        return
+        if self.CurrentGameObjectEdited == None:
+            return
+        self.CurrentGameObjectEdited.tag = self.varTag.get()
+
+    def OnLayerChanged(self,*args):
+        return
+        if self.CurrentGameObjectEdited == None:
+            return
+        self.CurrentGameObjectEdited.layer = self.varLayer.get()
+
+    def UpdateInspector(self,gameObject=[],*args,**kwargs):
+        #forget all children of body_frame
+        for child in self.body_frame.winfo_children():
+            child.forget()
+        if len(gameObject) == 0:
+            return
+        gameObject = gameObject[0]
+        self.CurrentGameObjectEdited = gameObject
+        self.varName.set(gameObject.name)
+        self.varActive.set(gameObject.activeSelf)
+        self.varStatic.set(gameObject.isStatic)
+        #self.varTag.set(gameObject.tag)
+        #self.varLayer.set(gameObject.layer)
+        #update dropdown
+        if gameObject.frameOfComponents == None:
+            gameObject.frameOfComponents = {}
+            gameObject.frameOfComponents["MainFrame"] = ctk.CTkFrame(self.body_frame)
+            components = {}
+            for component in gameObject.components:
+                pack = {}
+                pack["ToggledFrame"] = MyToggledFrame(gameObject.frameOfComponents["MainFrame"], text=component.ComponentName)
+                pack["ToggledFrame"].pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
+                pack["ToggledFrame"].Open()
+                pack["ComponentDrawer"] = ComponentDrawer.New(component.ComponentName)(pack["ToggledFrame"].sub_frame,component)
+                pack["ComponentDrawer"].SerializeFields()
+                components[component.ComponentName] = pack
+        gameObject.frameOfComponents["MainFrame"].pack(side=TOP, fill=X)
+
+
     def Pack(self):
         self.frame.pack(fill=BOTH, expand=True)
 
@@ -83,7 +155,6 @@ class AddComponentWindow(WindowEditor):
         super().__init__(None,"Ajouter un Component",ToplevelClass=tkinter.Toplevel)
         if self.WindowMode != "toplevel":
             raise Exception("AddComponentWindow: WindowMode not supported")
-        self.Particle.assetSystem.DisableNextRefresh = True
         self.MainFrame = ctk.CTkFrame(self.window,corner_radius=0,border_width=5)
         self.MainFrame.pack(fill=BOTH, expand=True)
         geo = str(self.ButtonAdd.winfo_width()) + "x250"
@@ -107,13 +178,14 @@ class AddComponentWindow(WindowEditor):
         self.EntrySearch = ctk.CTkEntry(self.HeaderFrame, textvariable=self.varSearch)
         self.EntrySearch.pack(side=LEFT, fill=X, expand=True)
 
-
         self.window.focus_force()
         self.window.focus_set()
         self.window.bind("<FocusOut>", self.OnLostFocus)
         self.Pack()
+        self.Particle.assetSystem.DisableNextRefresh = True
 
     def OnLostFocus(self,event):
+        self.Particle.assetSystem.DisableNextRefresh = True
         self.Destroy()
 
 InspectorWindowEditor.AddInspector(InspectorGameObject)

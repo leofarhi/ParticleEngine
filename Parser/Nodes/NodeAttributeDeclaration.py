@@ -9,10 +9,13 @@ class NodeAttributeDeclaration(BaseNode):
         self.isStatic = False
         self.defaultValue = None
         self.annotations = []
+        self.arguments = []
+        self.isArray = False
     
     def Compile(self) -> None:
         self.name = self.tree.declarators[0].name
-        self.type = self.tree.type.name
+        self.type = BaseNode.NewNode("NodeType")(self.tree.type)
+        self.type.Compile()
         if self.tree.modifiers is not None:
             for i in self.tree.modifiers:
                 if i == "public" or i == "private" or i == "protected":
@@ -22,10 +25,11 @@ class NodeAttributeDeclaration(BaseNode):
                 else:
                     RaiseException(self.tree, "Unknown modifier: " + i)
         if self.tree.declarators[0].initializer is not None:
-            self.defaultValue = self.tree.declarators[0].initializer.value
+            self.defaultValue = self.tree.declarators[0].initializer
         if self.tree.annotations is not None:
             for i in self.tree.annotations:
-                self.annotations.append(i.name)
+                self.annotations.append(BaseNode.NewNode("NodeAnnotation")(i))
+                self.annotations[-1].Compile()
         self.PrintVariables()
 
     def PrintVariables(self) -> None:
@@ -33,7 +37,7 @@ class NodeAttributeDeclaration(BaseNode):
         print("Attribute: " + self.name)
         print("Access: " + self.access)
         print("Static: " + str(self.isStatic))
-        print("Type: " + self.type)
+        print("Type: " + str(self.type))
         print("Default Value: " + str(self.defaultValue))
         print("Annotations: " + str(self.annotations))
         print("-" * 20)

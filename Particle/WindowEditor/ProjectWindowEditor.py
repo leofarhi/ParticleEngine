@@ -5,7 +5,7 @@ from Particle.Modules.Directory import *
 from Particle.Modules.Screen import GetScreenSize
 from Particle.Modules.SpecialImage import SpecialImage
 import os, sys
-from Particle.Types.AssetItem import AssetItem
+from Particle.OverwriteObject.AssetItem import AssetItem
 
 class FolderItem:
     Size = 70
@@ -198,9 +198,8 @@ class ProjectWindowEditor(WindowEditor):
         for i in openedFolders:
             #get item from path and open it
             #check if item exists
-            if not self.projectTree.exists(i):
-                continue
-            self.projectTree.item(i,open=True)
+            if self.projectTree.exists(i):
+                self.projectTree.item(i,open=True)
     def UpdateFolderView(self):
         for i in self.Items:
             if i.frame:

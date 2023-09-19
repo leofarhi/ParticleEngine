@@ -20,7 +20,7 @@ class NodeFile(BaseNode):
                 self.body.append(BaseNode.NewNode("NodeClassDeclaration")(i))
                 self.body[-1].Compile()
             elif isinstance(i, javalang.tree.EnumDeclaration):
-                self.body.append(BaseNode.NewNode("NodeEnum")(i))
+                self.body.append(BaseNode.NewNode("NodeEnumDeclaration")(i))
                 self.body[-1].Compile()
             else:
                 RaiseException(i, "Unknown node type: " + str(type(i)))

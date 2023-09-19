@@ -1,8 +1,11 @@
 from Particle.Modules.Includes import *
+from Particle.EnvironmentSystem import *
 
-class Object:
+@OverwriteObject()
+class Object(InstanceEnvironmentObject):
     Objects = {}
-    def __init__(self, UUID=None):
+    def __init__(self, UUID=None,*args, **kwargs):
+        InstanceEnvironmentObject.__init__(self,*args, **kwargs)
         self.Particle = GlobalVars.Particle
         if UUID is None:
             UUID = str(uuid.uuid4())
@@ -17,17 +20,15 @@ class Object:
             return None
         return Object.Objects.get(UUID, None)
 
-    def getDict(self):
-        return {"UUID": self.UUID}
+    def __reference__(self):
+        return self.UUID
     
-    def setDict(self, dic):
-        pass#Override this method to set your own variables
-        #On ne doit pas set le UUID, car il doit être set au moment de la création de l'objet
+    def __setreference__(data):
+        return Object.GetObject(data)
 
     def Destroy(self):
+        super().Destroy()
         self.CallBackDestroy()
 
     def CallBackDestroy(self):
-        #print("Object deleted : " + self.UUID)
         del self.Objects[self.UUID]
-        #print(self.Objects)

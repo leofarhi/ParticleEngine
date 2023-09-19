@@ -154,7 +154,17 @@ class SceneWindowEditor(WindowEditor):
             "Ouvrir une Scene": (),
             "Ouvrir une Scene recente": (),
         },False)
+        def SaveScene():
+            if GlobalVars.Particle.sceneManager.CurrentScene is not None:
+                GlobalVars.Particle.sceneManager.CurrentScene.Save()
+        def SaveSceneAs():
+            #open file dialog
+            path = tkinter.filedialog.asksaveasfilename(initialdir=GlobalVars.Particle.config.get("projectPath"),title="Enregistrer la Scene sous",filetypes=(("Scene","*.scene"),("Tous les fichiers","*.*")))
+            if path != "":
+                if os.path.splitext(path)[1] != ".scene":
+                    path += ".scene"
+                GlobalVars.Particle.sceneManager.CurrentScene.Save(path)
         GlobalVars.Particle.AddCommandsMenu("File", {
-            "Enregistrer la Scene": (),
-            "Enregistrer la Scene sous": (),
+            "Enregistrer la Scene": SaveScene,
+            "Enregistrer la Scene sous": SaveSceneAs,
         }, True)

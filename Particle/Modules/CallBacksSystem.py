@@ -1,5 +1,6 @@
 CallBacksStack = {
         "OnCreateMenu": [],
+        "SelectedGameObjectsChanged": [],
     }
 
 """

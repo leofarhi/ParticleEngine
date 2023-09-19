@@ -1,5 +1,6 @@
 package Engine.Types;
 
+@Serializable
 public class Vector2{
     public float x;
     public float y;

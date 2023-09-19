@@ -1,6 +1,8 @@
 package Engine.Types;
 
 public class Object{
+    
+    @HideInInspector
     public String UUID;
 
     public Object() {

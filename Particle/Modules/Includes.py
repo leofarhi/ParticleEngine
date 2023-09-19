@@ -50,3 +50,4 @@ from Particle.Modules.MyCustomTkinter.MyToolTip import MyToolTip,CreateToolTip
 
 class GlobalVars:
     Particle = None
+    NewEnv = None

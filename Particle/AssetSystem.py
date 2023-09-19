@@ -3,8 +3,8 @@ from Particle.Modules.Includes import ctk
 from Particle.Modules.LanguageSystem import LanguageSystem
 from Particle.Modules.Directory import *
 from Particle.WindowEditor.WindowEditor import WindowEditor
-from Particle.Types.AssetItem import AssetItem
-from Particle.Types.Object import Object
+from Particle.OverwriteObject.AssetItem import AssetItem
+from Particle.OverwriteObject.Object import Object
 
 
 class AssetSystem:
@@ -15,8 +15,9 @@ class AssetSystem:
         self.assetsPath = os.path.join(self.Particle.config.get("projectPath"), "Assets")
         self.varInfo= tkinter.StringVar()
         self.labelInfo = None
-        self.ScanAssets()
-        self.Particle.window.bind("<FocusIn>", self.OnRefreshAssets)
+        self.Particle.window.bind("<FocusIn>", self.OnFocusIn)
+        self.Particle.window.bind("<FocusOut>", self.OnFocusOut)
+        self.LostFocus = datetime.datetime.now()
         
     #attribut
     @property
@@ -54,6 +55,15 @@ class AssetSystem:
             if not os.path.exists(asset.path):
                 asset.Destroy()
         AssetSystem.Scanning = False
+
+    def OnFocusOut(self,event):
+        self.LostFocus = datetime.datetime.now()
+
+    def OnFocusIn(self,event):
+        if (datetime.datetime.now() - self.LostFocus).total_seconds() < 0.5:
+            return
+        self.LostFocus = datetime.datetime.now()
+        self.OnRefreshAssets(event)
 
     def OnRefreshAssets(self,event):
         if self.DisableNextRefresh:

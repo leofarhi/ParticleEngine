@@ -1,6 +1,8 @@
 from Particle.Modules.Includes import *
-from Particle.Types.Object import Object
+from Particle.OverwriteObject.Object import Object
+from Particle.EnvironmentSystem import *
 
+@OverwriteObject()
 class AssetItem(Object):
     @staticmethod
     def create(path):
@@ -47,8 +49,10 @@ class AssetItem(Object):
             if function in AssetItem.CallFileType[assetItem.extension]:
                 AssetItem.CallFileType[assetItem.extension][function](assetItem)
 
-    def __init__(self,path,UUID = None) -> None:
-        self.path = path
+    def __init__(self,path,UUID = None,*args, **kwargs) -> None:
+        self.UUID = None
+        #absolute path
+        self.path = os.path.abspath(os.path.realpath(path))
         self.name = os.path.basename(path)
         self.extension = os.path.splitext(path)[1]
         self.type = "file" if os.path.isfile(path) else "dir"
@@ -65,13 +69,13 @@ class AssetItem(Object):
                     self.config["name"] = self.name
                     self.config["metaPath"] = self.metaPath
                 if self.config.get("extension") == self.extension and self.config.get("type") == self.type:
-                    super().__init__(self.config.get("UUID"))
+                    super().__init__(self.config.get("UUID"),*args, **kwargs)
                 else:
                     IsNew = True
         else:
             IsNew = True
         if IsNew:
-            super().__init__(None)
+            super().__init__(None,*args, **kwargs)
             self.config = super().getDict()
             SecondConfig = {
                 "path": self.path,
@@ -117,6 +121,7 @@ class AssetItem(Object):
 
     @staticmethod
     def GetAssetItem(path):
+        path = os.path.abspath(os.path.realpath(path))
         return AssetItem.create(path)
     
     @staticmethod

@@ -4,8 +4,11 @@
 from Particle.Modules.Includes import *
 
 class OperationsSystem:
-    def __init__(self) -> None:
-        pass
+    def __init__(self,particle):
+        self.particle = particle
+        self.commands = []
+        self.commandsIndex = -1
+        self.commandsMax = 10
 
     @AddCallBackToStack("OnCreateMenu",0)
     def OnCreateMenu():

@@ -6,36 +6,45 @@ from Particle.Modules.Screen import GetScreenSize
 
 
 class InspectorWindowEditor(WindowEditor):
-    inspectors = []
+    __inspectors__ = []
     Instance = None
     def __init__(self, master=None):
         super().__init__(master,"Inspector")
         InspectorWindowEditor.Instance = self
+        self.name = "Inspector"
         self.inspectorsRuntimes = []
-        for i in InspectorWindowEditor.inspectors:
+        for i in InspectorWindowEditor.__inspectors__:
             self.inspectorsRuntimes.append(i(self))
 
-        #DEBUG
-        if len(self.inspectorsRuntimes) > 0:
-            self.inspectorsRuntimes[0].Pack()
+        self.currentInspector = None
+
+    @AddCallBackToStack("SelectedGameObjectsChanged")
+    def UpdateInspector(*args,**kwargs):
+        self = InspectorWindowEditor.Instance
+        if self.currentInspector != None:
+            self.currentInspector.UpdateInspector(*args,**kwargs)
 
     def AddInspector(inspector):
-        InspectorWindowEditor.inspectors.append(inspector)
+        InspectorWindowEditor.__inspectors__.append(inspector)
         if InspectorWindowEditor.Instance is not None:
             InspectorWindowEditor.Instance.inspectorsRuntimes(inspector(InspectorWindowEditor.Instance))
 
     def ShowInspector(self,inspectorName):
+        if self.currentInspector != None and self.currentInspector.name == inspectorName:
+            return
+        self.currentInspector = None
         for i in self.inspectorsRuntimes:
             i.Unpack()
-        for i in self.inspectors:
-            if i.name == self.inspectorsRuntimes:
+        for i in self.inspectorsRuntimes:
+            if i.name == inspectorName:
                 i.Pack()
+                self.currentInspector = i
                 break
 
 #load all inspectors withou import them
 for i in os.listdir(os.path.dirname(__file__) + "/Inspectors"):
     if i.endswith(".py"):
         #check if not already loaded with InspectorWindowEditor.inspectors
-        if not any(x.name == i[:-3] for x in InspectorWindowEditor.inspectors):
+        if not any(x.name == i[:-3] for x in InspectorWindowEditor.__inspectors__):
             #print("load inspector: " + i[:-3])
             importlib.import_module("Particle.WindowEditor.Inspectors." + i[:-3])

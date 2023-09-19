@@ -1,5 +1,9 @@
 import subprocess
 import platform
+
+from Particle.OverwriteObject.Vector3 import Vector3
+from Particle.OverwriteObject.Vector2 import Vector2
+
 from Particle.Modules.Screen import GetScreenSize
 from Particle.Modules.Includes import *
 from Particle.Modules.LanguageSystem import LanguageSystem
@@ -10,11 +14,11 @@ from Particle.WindowEditor.SceneWindowEditor import SceneWindowEditor
 from Particle.ScreenOrganization import ScreenOrganization
 from Particle.AssetSystem import AssetSystem
 from Particle.SceneManager import SceneManager
-from Particle.Types.AssetItem import AssetItem
-from Particle.Types.Scene import Scene
+from Particle.OverwriteObject.AssetItem import AssetItem
+from Particle.OverwriteObject.Scene import Scene
 from Particle.OperationsSystem import OperationsSystem
 
-import Parser
+from Particle.EnvironmentSystem import NewEnv,EnvironmentSystem
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -34,6 +38,7 @@ class Particle:
             "lastOpened": "",
             "scene": "",#Scene actuellement ouverte (UUID)
         }
+        self.ParticlePath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
     def HubWindow(self):
         hub = HubWindowEditor()
@@ -100,11 +105,24 @@ class Particle:
         self.MainFrame.pack(fill=BOTH, expand=True)
         self.SecondFrame = None
 
+        self.environmentSystem = EnvironmentSystem(self)
+        self.environmentSystem.roots.append(self.ParticlePath+"/Engine")
+        self.environmentSystem.UpdateFiles()
+        self.environmentSystem.Compile()
+
         self.sceneManager = SceneManager(self)
         self.screenOrganization = ScreenOrganization(self)
         self.assetSystem = AssetSystem(self)
+        self.assetSystem.ScanAssets()
         
         CallBacksStackCall("OnCreateMenu")
+
+        self.environmentSystem.roots.append(self.config["projectPath"]+"/Assets")
+        self.environmentSystem.UpdateFiles()
+        self.environmentSystem.Compile()
+
+        self.operationsSystem = OperationsSystem(self)
+
         self.LoadLastScene()
 
         #Quitter
