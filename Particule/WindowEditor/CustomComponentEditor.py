@@ -86,18 +86,18 @@ def CustomComponentDrawer(type):
 class IntDrawer(PropertyDrawer):
     def __init__(self,masterFrame,serializedProperty):
         super().__init__(masterFrame,serializedProperty)
-        self.frame = Frame(self.masterFrame)
+        self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #config grid
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         #label grid
-        self.label = Label(self.frame,text=self.serializedProperty.attributeName)
-        self.label.grid(row=0,column=0)
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
+        self.label.grid(row=0,column=0,padx=2)
         self.var = IntVar()
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
-        self.entry = Entry(self.frame,textvariable=self.var)
+        self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
         self.entry.grid(row=0,column=1)
         self.OnValueChanged()
         self.entry.bind("<FocusOut>",self.OnFocusOut)
@@ -118,18 +118,18 @@ class IntDrawer(PropertyDrawer):
 class FloatDrawer(PropertyDrawer):
     def __init__(self,masterFrame,serializedProperty):
         super().__init__(masterFrame,serializedProperty)
-        self.frame = Frame(self.masterFrame)
+        self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #config grid
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         #label grid
-        self.label = Label(self.frame,text=self.serializedProperty.attributeName)
-        self.label.grid(row=0,column=0)
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
+        self.label.grid(row=0,column=0,padx=2)
         self.var = DoubleVar()
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
-        self.entry = Entry(self.frame,textvariable=self.var)
+        self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
         self.entry.grid(row=0,column=1)
         self.OnValueChanged()
         self.entry.bind("<FocusOut>",self.OnFocusOut)
@@ -148,15 +148,15 @@ class FloatDrawer(PropertyDrawer):
 class BoolDrawer(PropertyDrawer):
     def __init__(self,masterFrame,serializedProperty):
         super().__init__(masterFrame,serializedProperty)
-        self.frame = Frame(self.masterFrame)
+        self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #label grid
-        self.label = Label(self.frame,text=self.serializedProperty.attributeName)
-        self.label.grid(row=0,column=0)
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
+        self.label.grid(row=0,column=0,padx=2)
         self.var = BooleanVar()
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
-        self.entry = Checkbutton(self.frame,variable=self.var)
+        self.entry = ctk.CTkCheckBox(self.frame,variable=self.var,text="")
         self.entry.grid(row=0,column=1)
         self.OnValueChanged()
 
@@ -167,18 +167,18 @@ class BoolDrawer(PropertyDrawer):
 class StringDrawer(PropertyDrawer):
     def __init__(self,masterFrame,serializedProperty):
         super().__init__(masterFrame,serializedProperty)
-        self.frame = Frame(self.masterFrame)
+        self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         #config grid left and expand column 1
         self.frame.columnconfigure(0, weight=1)
         self.frame.columnconfigure(1, weight=1)
         #label grid
         self.label = Label(self.frame,text=self.serializedProperty.attributeName)
-        self.label.grid(row=0,column=0)
+        self.label.grid(row=0,column=0,padx=2)
         self.var = StringVar()
         self.var.set(self.serializedProperty.GetValue())
         self.var.trace_add("write",self.OnValueChanged)
-        self.entry = Entry(self.frame,textvariable=self.var)
+        self.entry = ctk.CTkEntry(self.frame,textvariable=self.var)
         self.entry.grid(row=0,column=1)
         #self.OnValueChanged()
 

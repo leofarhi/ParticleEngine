@@ -62,7 +62,7 @@ class Vector3(InstanceEnvironmentObject):
 class Vector3Drawer(PropertyDrawer):
     def __init__(self,masterFrame,serializedProperty):
         super().__init__(masterFrame,serializedProperty)
-        self.frame = Frame(self.masterFrame)
+        self.frame = ctk.CTkFrame(self.masterFrame)
         self.frame.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
         self.x = DoubleVar()
         self.y = DoubleVar()
@@ -75,14 +75,14 @@ class Vector3Drawer(PropertyDrawer):
         self.y.trace_add("write",self.OnValueChanged)
         self.z.trace_add("write",self.OnValueChanged)
         #label grid
-        self.label = Label(self.frame,text=self.serializedProperty.attributeName)
-        self.label.grid(row=0,column=0)
+        self.label = ctk.CTkLabel(self.frame,text=self.serializedProperty.attributeName)
+        self.label.grid(row=0,column=0,padx=2)
         
-        self.entry1 = Entry(self.frame,textvariable=self.x)
+        self.entry1 = ctk.CTkEntry(self.frame,textvariable=self.x)
         self.entry1.grid(row=0,column=1)
-        self.entry2 = Entry(self.frame,textvariable=self.y)
+        self.entry2 = ctk.CTkEntry(self.frame,textvariable=self.y)
         self.entry2.grid(row=0,column=2)
-        self.entry3 = Entry(self.frame,textvariable=self.z)
+        self.entry3 = ctk.CTkEntry(self.frame,textvariable=self.z)
         self.entry3.grid(row=0,column=3)
         self.OnValueChanged()
         self.entry1.bind("<FocusOut>",self.OnFocusOut)

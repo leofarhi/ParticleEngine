@@ -19,9 +19,9 @@ class HierarchyWindowEditor(WindowEditor):
                                         yscrollcommand=self.hierarchyTreeScrollbar.set)
         self.hierarchyTreeScrollbar.configure(command=self.hierarchyTree.yview)
 
-        self.gameobjectIcon = SpecialImage("lib/UI/Icons/Project/folder_small.png").imageTk
-        self.PrefabIcon = SpecialImage("lib/UI/Icons/Project/textfile_small.png").imageTk
-        self.SceneIcon = SpecialImage("lib/UI/Icons/Project/textfile_small.png").imageTk
+        self.gameobjectIcon = SpecialImage("lib/UI/Icons/Project/Extensions/.gameobject.png").Resize(16,16).imageTk
+        self.PrefabIcon = SpecialImage("lib/UI/Icons/Project/Extensions/.prefab.png").Resize(16,16).imageTk
+        self.SceneIcon = SpecialImage("lib/UI/Icons/Project/Extensions/.scene.png").Resize(16,16).imageTk
         
         self.hierarchyTree.pack(side=LEFT, fill=BOTH, expand=True)
         self.hierarchyTreeScrollbar.pack(side=LEFT, fill=Y)

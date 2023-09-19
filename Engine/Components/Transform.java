@@ -3,6 +3,7 @@ package Engine.Components;
 import java.util.ArrayList;
 import Engine.Types.Vector3;
 import Engine.Types.GameObject;
+import Engine.Types.Vector2;
 import Engine.Types.Component;
 
 public class Transform extends Component{

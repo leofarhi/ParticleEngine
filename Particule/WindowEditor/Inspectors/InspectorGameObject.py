@@ -130,7 +130,7 @@ class InspectorGameObject:
             components = {}
             for component in gameObject.components:
                 pack = {}
-                pack["ToggledFrame"] = MyToggledFrame(gameObject.frameOfComponents["MainFrame"], text=component.ComponentName)
+                pack["ToggledFrame"] = MyToggledFrame(gameObject.frameOfComponents["MainFrame"], text=component.ComponentName,border_color="white",border_width=1)
                 pack["ToggledFrame"].pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
                 pack["ToggledFrame"].Open()
                 pack["ComponentDrawer"] = ComponentDrawer.New(component.ComponentName)(pack["ToggledFrame"].sub_frame,component)
