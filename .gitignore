@@ -162,3 +162,5 @@ ParticuleEngine.bat
 lib/hub.json
 lib/tmp/*
 OldParser/*
+ParticuleEngine.sh
+ParticuleEngine.bat

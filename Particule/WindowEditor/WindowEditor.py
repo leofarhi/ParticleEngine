@@ -60,10 +60,12 @@ class WindowEditor(CTkAppearanceModeBaseClass):
     def LoadWindowIcon(self):
         if platform.system()=="Windows":
             self.window.iconbitmap("lib/UI/Icons/icon.ico")
+        """
         elif platform.system()=="Darwin":
             self.window.iconbitmap("lib/UI/Icons/icon.xbm")
         elif platform.system()=="Linux":
             self.window.iconbitmap("lib/UI/Icons/icon.xbm")
+        """
 
     def _set_appearance_mode(self, *args, **kwargs):
         super()._set_appearance_mode(*args, **kwargs)

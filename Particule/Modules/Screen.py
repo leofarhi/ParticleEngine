@@ -11,7 +11,7 @@ elif platform.system()=="Darwin":
         return (NSScreen.mainScreen().frame().size.width,NSScreen.mainScreen().frame().size.height)
 elif platform.system()=="Linux":
     def GetScreenSize():
-        return tuple(map(int, subprocess.check_output(['xrandr', '--current']).split(b'primary')[1].split()[0].split(b'x')))
+        return tuple(map(int, subprocess.check_output(['xrandr', '--current']).split(b'primary')[1].split(b"+")[0].split()[0].split(b'x')))
 else:
     def GetScreenSize():
         return (500,500)

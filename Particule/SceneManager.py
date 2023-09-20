@@ -38,5 +38,5 @@ class SceneManager:
         asset = AssetItem.create(path)
         self.CurrentScene.assetItem = asset
         self.Particule.GetEditor("Project").Update()
-        self.Particule.GetEditor("Hierarchy").Update()
+        self.Particule.GetEditor("Hierarchy").UpdateHierarchy()
         #print("Scene Created")

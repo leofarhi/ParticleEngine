@@ -3,6 +3,11 @@ import os,sys
 import subprocess
 import platform
 
+if platform.system() == "Windows":
+    pythonCMD = ["py","-3.10"]
+else:
+    pythonCMD = ["python3.10"]
+
 url = "https://github.com/leofarhi/ParticuleEngine.git"
 
 #check if the user have git installed with the command git
@@ -37,17 +42,9 @@ if sys.version_info[0] != 3 or sys.version_info[1] != 10:
     print("If you have Python 3.10 installed, please make sure that you are running this program with Python 3.10")
     input("Press enter to continue...")
     sys.exit()
-
-#check if the user have pip
-try:
-    import pip
-except ImportError:
-    print("You need to have pip to run this program")
-    print("Please install pip and try again")
-    input("Press enter to continue...")
     
 #create the virtual environment
-subprocess.run(["py","-3.10", "-m", "venv", "venv"])
+subprocess.run(pythonCMD+["-m", "venv", "venv"])
 
 requirement = """
 customtkinter
@@ -66,11 +63,16 @@ else:
     requirement += """
 """
 
+if platform.system() == "Windows":
+    pythonCMD = ["venv\\Scripts\\python.exe"]
+else:
+    pythonCMD = ["venv/bin/python3"]
+
 #install the requirements
-subprocess.run(["venv\\Scripts\\python.exe", "-m", "pip", "install", "--upgrade", "pip"])
+subprocess.run(pythonCMD+["-m", "pip", "install", "--upgrade", "pip"])
 for package in requirement.split("\n"):
     if package != "":
-        subprocess.run(["venv\\Scripts\\python.exe", "-m", "pip", "install", package])
+        subprocess.run(pythonCMD+["-m", "pip", "install", package])
 
 #make Start File executable .bat for Windows and .sh for Linux
 if platform.system() == "Windows":
@@ -80,8 +82,9 @@ if platform.system() == "Windows":
         file.write("\npause")
 else:
     with open("ParticuleEngine.sh", "w") as file:
-        file.write("venv/bin/python3.10 main.py")
+        file.write("venv/bin/python3 main.py")
         file.write("\nread -p \"Press enter to continue...\"")
+    subprocess.run(["chmod","+x","./ParticuleEngine.sh"])
 
 #wait for the user to press enter
 input("Press enter to continue...")
