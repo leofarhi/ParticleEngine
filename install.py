@@ -53,6 +53,7 @@ pyopengltk
 Pillow
 numpy
 javalang
+packaging
 """
 
 if platform.system() == "Windows":
